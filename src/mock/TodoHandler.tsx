@@ -10,6 +10,20 @@ export enum IStatusRecord {
     Incomplete = "Incomplete"
 }
 
+const todoForm = {
+    todoName: {
+        name: 'todoName',
+        require: true,
+        maxLength: 100,
+        type: 'TEXT'
+    },
+    finishDate: {
+        name: 'finishDate',
+        require: true,
+        type: 'DATE'
+    },
+}
+
 export const handlers = [
     http.get(`${TENANT_URL}/${baseAPIUrl}/getAll`, () => {
         return HttpResponse.json([
@@ -44,10 +58,35 @@ export const handlers = [
     http.post(`${TENANT_URL}/${baseAPIUrl}/create`, async (resolver) => {
         const { request } = resolver;
         const newTodoObj: Record<string, any> = (await request.json()) as Record<string, any>;
+        const errorMess: Record<string, any> = {};
+        Object.values(todoForm).forEach((obj: any) => {
+            const { name, require, type, maxLength } = obj;
+            const value = newTodoObj[name];
+            switch (type) {
+                case 'TEXT':
+                    if (require && !value) {
+                        errorMess[name] = 'The item is required';
+                    } else if (value > maxLength) {
+                        errorMess[name] = `The items must be less than ${maxLength} characters`;
+                    }
+                    break;
+                case 'DATE':
+                    if (require && !value) {
+                        errorMess[name] = 'The item is required';
+                    } else if (new Date(value).toString() == "Invalid Date") {
+                        errorMess[name] = `The item is invalid date`;
+                    }
+                    break;
+            }
+        });
+
+        if (Object.keys(errorMess).length > 0) {
+            return HttpResponse.json(errorMess, { status: 400 });
+        }
 
         return HttpResponse.json({
             ...newTodoObj,
-            id: uuidv4(),
+            id: '1',
             status: IStatusRecord.Incomplete,
         }, { status: 201 });
     }),
