@@ -3,21 +3,14 @@ import { handleMesages, MESSAGE } from '../../constants/messages';
 import { TodoService } from '../../services/TodoService';
 import { TodoLayout } from '../layout/TodoLayout/TodoLayout';
 import { useEffect, useState } from 'react';
-import { FormInput } from '../template/FormInput/FormInput';
-import { Checkbox, DatePicker, Table } from 'antd';
+import { FormInput } from '../template/FormHook/FormInput/FormInput';
+import { Checkbox, Table, TableColumnsType } from 'antd';
 import { IStatusRecord } from '../../mock/TodoHandler';
-import moment from 'moment';
 import './index.scss';
 
 enum TODO_PROPERTIES_FORM_ENUM {
     TODO_NAME = "todoName",
-    FINISH_DATE = "finishDate",
 };
-
-type IFormInputs = {
-    todoName: string,
-    finishDate: Date,
-}
 
 type TodoFormTypes = {
     [key in TODO_PROPERTIES_FORM_ENUM]: {
@@ -32,13 +25,13 @@ type TodoFormTypes = {
 interface ITodoData {
     id: string;
     todoName: string;
-    finishDate: any;
-    status: IStatusRecord;
+    status?: IStatusRecord;
 }
 
-const defaultTodoForm: IFormInputs = {
+const defaultTodoForm: ITodoData = {
+    id: '',
     todoName: '',
-    finishDate: new Date()
+    status: IStatusRecord.Incomplete
 }
 const TodoForm: TodoFormTypes = {
     [TODO_PROPERTIES_FORM_ENUM.TODO_NAME]: {
@@ -49,47 +42,27 @@ const TodoForm: TodoFormTypes = {
             value: 100,
             message: handleMesages(MESSAGE.E0002, ["Name of todo", 100])
         }
-    },
-    [TODO_PROPERTIES_FORM_ENUM.FINISH_DATE]: {
-        name: TODO_PROPERTIES_FORM_ENUM.FINISH_DATE,
-        title: "Finish date",
-        required: handleMesages(MESSAGE.E0001, ["Finish date"]),
     }
 }
 
 export const TodoHome = () => {
-    const [listTodo, setListTodo] = useState<IFormInputs[]>([]);
+    const [listTodo, setListTodo] = useState<ITodoData[]>([]);
     const {
         register,
         reset,
         watch,
         formState: { errors },
         handleSubmit,
-    } = useForm<IFormInputs>({ defaultValues: defaultTodoForm });
+    } = useForm<ITodoData>({ defaultValues: defaultTodoForm });
 
-    const { todoName, finishDate } = TodoForm;
+    const { todoName } = TodoForm;
 
-    const onErrorTodo = async (values: any) => {
-        // Noting coding
+    const onSubmitTodo = async (values: ITodoData) => {
         try {
             const res = await TodoService.createTodoService(values);
             const { status, data } = res;
-            if (status == 200) {
-
-            }
-        } catch (error) {
-            console.log(error)
-        }
-    };
-
-    const onSubmitTodo = async (values: IFormInputs) => {
-        console.log(errors, values);
-        try {
-            const res = await TodoService.createTodoService(values);
-            const { status, data } = res;
-
             if (status == 201) {
-                const todoObj: IFormInputs = JSON.parse(data);
+                const todoObj: ITodoData = JSON.parse(data);
                 setListTodo((preState) => [todoObj, ...preState]);
                 reset();
             }
@@ -114,7 +87,7 @@ export const TodoHome = () => {
         getAllTodo();
     }, []);
 
-    const columns: any = [
+    const columns: TableColumnsType<ITodoData> = [
         {
             title: 'ID',
             dataIndex: 'id',
@@ -124,12 +97,6 @@ export const TodoHome = () => {
             title: 'To do name',
             dataIndex: 'todoName',
             key: 'todoName',
-        },
-        {
-            title: 'Finish date',
-            dataIndex: 'finishDate',
-            key: 'finishDate',
-            render: (date: any) => moment(date).format('YYYY-MM-DD HH:mm:ss')
         },
         {
             title: 'Status',
@@ -151,7 +118,7 @@ export const TodoHome = () => {
             ],
             filterMode: 'tree',
             filterSearch: true,
-            onFilter: (value: any, record: ITodoData) => record.status.includes(value),
+            onFilter: (value?: any, record?: ITodoData) => record!.status!.includes(value),
             width: '30%',
         },
     ];
@@ -161,26 +128,16 @@ export const TodoHome = () => {
         ...item
     }));
 
-    // const onChange = (date: any, dateString: any) => {
-    //     console.log("dateString", date, dateString);
-    //   };
-
     return (
         <TodoLayout>
             <div id="container-form">
                 <div id="form-input" >
-                    <form onSubmit={handleSubmit(onSubmitTodo, onErrorTodo)} >
+                    <form onSubmit={handleSubmit(onSubmitTodo)} >
                         <FormInput
                             title={todoName.title}
                             content={register(todoName.name, { ...todoName })}
                             errorMessage={errors.todoName?.message}
                         ></FormInput>
-                        <FormInput
-                            title={finishDate.title}
-                            content={register(finishDate.name, { ...finishDate })}
-                            errorMessage={errors.finishDate?.message}
-                        ></FormInput>
-                        {/* <DatePicker onChange={onChange} needConfirm ></DatePicker> */}
                         <input type="submit" value="Add Task" />
                     </form>
                 </div>
@@ -189,7 +146,7 @@ export const TodoHome = () => {
             <Table
                 columns={columns}
                 dataSource={dataSource}
-            // footer={() => }
+                locale={{ selectAll: 'All' }}
             ></Table>
         </TodoLayout>
     )

@@ -1,7 +1,6 @@
 import React from 'react'
-import Footer from '../../template/Footer/Footer';
 import Header from '../../template/Header/Header';
-import './TodoLayout.scss';
+import './index.scss';
 
 export interface TodoProps {
   children: React.ReactNode
@@ -15,7 +14,6 @@ export const TodoLayout = (props: TodoProps) => {
       <div id="container-body">
         {children}
       </div>
-      {/* <Footer></Footer> */}
     </div>
   )
 }

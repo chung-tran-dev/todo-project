@@ -11,12 +11,12 @@ form {
         color: white;
         cursor: pointer;
         height: 31px;
-        width: 60px;
-        margin-top: 31px;
+        width: 100px;
+        margin-top: 29px;
         flex: 3;
     }
 }
 
-.ant-table-content .ant-table-cell .ant-checkbox-input:checked{
-    background-color: green;
+.ant-table-content .ant-table-cell .ant-checkbox-inner:after {
+    border-color: limegreen !important;
 }

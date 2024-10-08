@@ -16,31 +16,26 @@ export const handlers = [
             {
                 id: uuidv4(),
                 todoName: 'John',
-                finishDate: new Date(),
                 status: IStatusRecord.Completed
             },
             {
                 id: uuidv4(),
                 todoName: 'Amber',
-                finishDate: new Date(),
                 status: IStatusRecord.Incomplete
             },
             {
                 id: uuidv4(),
                 todoName: 'Herry',
-                finishDate: new Date(),
                 status: IStatusRecord.Incomplete
             },
             {
                 id: uuidv4(),
                 todoName: 'Curtis',
-                finishDate: new Date(),
                 status: IStatusRecord.Completed
             },
             {
                 id: uuidv4(),
                 todoName: 'Hank',
-                finishDate: new Date(),
                 status: IStatusRecord.Completed
             },
         ]);

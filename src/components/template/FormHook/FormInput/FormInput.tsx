@@ -3,8 +3,8 @@ import './index.scss';
 
 interface IFormInput {
     title: string;
+    errorMessage?: any;
     content: any;
-    errorMessage?: string;
 }
 
 export const FormInput = (props: IFormInput) => {

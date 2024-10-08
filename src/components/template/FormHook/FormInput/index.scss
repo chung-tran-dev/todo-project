@@ -1,0 +1,29 @@
+.form-input {
+    margin-top: 10px;
+
+    label {
+        font-size: 12px;
+    }
+
+    input {
+        outline: none;
+        font-size: 13px;
+        width: 80%;
+        height: 25px;
+        padding-left: 10px;
+        border-radius: 6px;
+        border: 1px solid rgb(218, 211, 211);
+        transition: border-color 0.3s ease, box-shadow 0.3s ease;
+
+        &:focus {
+            border-color: #66afe9;
+            box-shadow: 0 0 5px rgba(102, 175, 233, 0.5);
+        }
+    }
+
+    span {
+        color: rgb(209, 50, 50);
+        font-size: 11px;
+        font-style: italic;
+    }
+}
