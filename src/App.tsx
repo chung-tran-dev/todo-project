@@ -4,8 +4,8 @@ import { TodoHome } from './components/modules/TodoHome';
 
 const router = createBrowserRouter(
   createRoutesFromElements(
-    <Route path="/">
-      <Route path="Todo" element={<TodoHome />} />
+    <Route  path="">
+      <Route path="" element={<TodoHome />} />
     </Route>
   )
 );

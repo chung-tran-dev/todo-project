@@ -17,11 +17,6 @@ const todoForm = {
         maxLength: 100,
         type: 'TEXT'
     },
-    finishDate: {
-        name: 'finishDate',
-        require: true,
-        type: 'DATE'
-    },
 }
 
 export const handlers = [
@@ -70,13 +65,6 @@ export const handlers = [
                         errorMess[name] = `The items must be less than ${maxLength} characters`;
                     }
                     break;
-                case 'DATE':
-                    if (require && !value) {
-                        errorMess[name] = 'The item is required';
-                    } else if (new Date(value).toString() == "Invalid Date") {
-                        errorMess[name] = `The item is invalid date`;
-                    }
-                    break;
             }
         });
 
@@ -86,7 +74,7 @@ export const handlers = [
 
         return HttpResponse.json({
             ...newTodoObj,
-            id: '1',
+            id: uuidv4(),
             status: IStatusRecord.Incomplete,
         }, { status: 201 });
     }),
