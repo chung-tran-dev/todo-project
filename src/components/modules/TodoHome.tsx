@@ -4,7 +4,7 @@ import { TodoService } from '../../services/TodoService';
 import { TodoLayout } from '../layout/TodoLayout/TodoLayout';
 import { useEffect, useState } from 'react';
 import { FormInput } from '../template/FormInput/FormInput';
-import { Table } from 'antd';
+import { Checkbox, DatePicker, Table } from 'antd';
 import { IStatusRecord } from '../../mock/TodoHandler';
 import moment from 'moment';
 import './index.scss';
@@ -29,13 +29,17 @@ type TodoFormTypes = {
     }
 }
 
-interface TodoData {
+interface ITodoData {
     id: string;
     todoName: string;
     finishDate: any;
     status: IStatusRecord;
-  }
+}
 
+const defaultTodoForm: IFormInputs = {
+    todoName: '',
+    finishDate: new Date()
+}
 const TodoForm: TodoFormTypes = {
     [TODO_PROPERTIES_FORM_ENUM.TODO_NAME]: {
         name: TODO_PROPERTIES_FORM_ENUM.TODO_NAME,
@@ -54,23 +58,21 @@ const TodoForm: TodoFormTypes = {
 }
 
 export const TodoHome = () => {
-    const [listTodo, setListTodo] = useState([]);
+    const [listTodo, setListTodo] = useState<IFormInputs[]>([]);
     const {
         register,
+        reset,
         watch,
         formState: { errors },
         handleSubmit,
-    } = useForm<IFormInputs>();
+    } = useForm<IFormInputs>({ defaultValues: defaultTodoForm });
 
     const { todoName, finishDate } = TodoForm;
 
     const onErrorTodo = async (values: any) => {
         // Noting coding
         try {
-            const res = await TodoService.createTodoService({
-                todoName: "sadsadsad",
-                finishDate: new Date(),
-            });
+            const res = await TodoService.createTodoService(values);
             const { status, data } = res;
             if (status == 200) {
 
@@ -85,8 +87,11 @@ export const TodoHome = () => {
         try {
             const res = await TodoService.createTodoService(values);
             const { status, data } = res;
-            if (status == 200) {
 
+            if (status == 201) {
+                const todoObj: IFormInputs = JSON.parse(data);
+                setListTodo((preState) => [todoObj, ...preState]);
+                reset();
             }
         } catch (error) {
             console.log(error)
@@ -109,7 +114,7 @@ export const TodoHome = () => {
         getAllTodo();
     }, []);
 
-    const columns = [
+    const columns: any = [
         {
             title: 'ID',
             dataIndex: 'id',
@@ -130,28 +135,24 @@ export const TodoHome = () => {
             title: 'Status',
             dataIndex: 'status',
             key: 'status',
+            render: (data: any) => {
+                const isCompeted = data === IStatusRecord.Completed;
+                return <Checkbox defaultChecked={isCompeted} disabled />
+            },
             filters: [
                 {
-                  text: IStatusRecord.All,
-                  value: IStatusRecord.All
-                },
-                {
-                  text: IStatusRecord.Completed,
-                  value: IStatusRecord.Completed
+                    text: IStatusRecord.Completed,
+                    value: IStatusRecord.Completed,
                 },
                 {
                     text: IStatusRecord.Incomplete,
-                    value: IStatusRecord.Incomplete
-                  },
-              ],
-              onFilter: (value: any, record: TodoData) => {
-                if (value === IStatusRecord.All) {
-                  return true;
-                }
-                return record.status === value;
-              },
-              filterSearch: true,
-              width: '30%',
+                    value: IStatusRecord.Incomplete,
+                },
+            ],
+            filterMode: 'tree',
+            filterSearch: true,
+            onFilter: (value: any, record: ITodoData) => record.status.includes(value),
+            width: '30%',
         },
     ];
 
@@ -159,6 +160,10 @@ export const TodoHome = () => {
         key: item.id,
         ...item
     }));
+
+    // const onChange = (date: any, dateString: any) => {
+    //     console.log("dateString", date, dateString);
+    //   };
 
     return (
         <TodoLayout>
@@ -175,12 +180,17 @@ export const TodoHome = () => {
                             content={register(finishDate.name, { ...finishDate })}
                             errorMessage={errors.finishDate?.message}
                         ></FormInput>
-                        <input type="submit" value="Add" />
+                        {/* <DatePicker onChange={onChange} needConfirm ></DatePicker> */}
+                        <input type="submit" value="Add Task" />
                     </form>
                 </div>
                 <div id="result-list"></div>
             </div>
-            <Table columns={columns} dataSource={dataSource}></Table>
+            <Table
+                columns={columns}
+                dataSource={dataSource}
+            // footer={() => }
+            ></Table>
         </TodoLayout>
     )
 }

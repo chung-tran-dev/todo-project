@@ -11,8 +11,7 @@ export enum IStatusRecord {
 }
 
 export const handlers = [
-    http.get(`${TENANT_URL}/${baseAPIUrl}/getAll`, (resolver) => {
-        console.log(resolver);
+    http.get(`${TENANT_URL}/${baseAPIUrl}/getAll`, () => {
         return HttpResponse.json([
             {
                 id: uuidv4(),
@@ -47,12 +46,14 @@ export const handlers = [
         ]);
     }),
 
-    http.post(`${TENANT_URL}/${baseAPIUrl}/create`, (req) => {
-        console.log(req);
-        const { request } = req;
+    http.post(`${TENANT_URL}/${baseAPIUrl}/create`, async (resolver) => {
+        const { request } = resolver;
+        const newTodoObj: Record<string, any> = (await request.json()) as Record<string, any>;
+
         return HttpResponse.json({
+            ...newTodoObj,
             id: uuidv4(),
-            ...request.body
-        });
+            status: IStatusRecord.Incomplete,
+        }, { status: 201 });
     }),
 ]

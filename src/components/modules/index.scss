@@ -16,3 +16,7 @@ form {
         flex: 3;
     }
 }
+
+.ant-table-content .ant-table-cell .ant-checkbox-input:checked{
+    background-color: green;
+}
