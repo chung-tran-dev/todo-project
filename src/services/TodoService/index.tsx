@@ -1,4 +1,3 @@
-import axios from "axios";
 import { instance } from ".."
 
 const baseAPIUrl = "todo";
@@ -7,7 +6,7 @@ export class TodoService {
 
     static createTodoService(data: any) {
         return instance.post(`${baseAPIUrl}/create`, data, {
-            headers: { 'Content-Type': 'application/json'}
+            headers: { 'Content-Type': 'application/json' }
         });
     }
 

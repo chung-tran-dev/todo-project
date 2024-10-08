@@ -14,9 +14,8 @@ export const TodoLayout = (props: TodoProps) => {
       <Header></Header>
       <div id="container-body">
         {children}
-        test
       </div>
-      <Footer></Footer>
+      {/* <Footer></Footer> */}
     </div>
   )
 }

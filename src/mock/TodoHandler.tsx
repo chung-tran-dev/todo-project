@@ -1,39 +1,48 @@
-// src/mocks/handlers.js
 import { http, HttpResponse } from 'msw';
 import { v4 as uuidv4 } from 'uuid';
 
 const TENANT_URL = "https://todo-domain.com/api";
 const baseAPIUrl = "todo"
 
+export enum IStatusRecord {
+    All = "All",
+    Completed = "Completed",
+    Incomplete = "Incomplete"
+}
+
 export const handlers = [
     http.get(`${TENANT_URL}/${baseAPIUrl}/getAll`, (resolver) => {
         console.log(resolver);
-        // ...and respond to them using this JSON response.
         return HttpResponse.json([
             {
                 id: uuidv4(),
                 todoName: 'John',
                 finishDate: new Date(),
+                status: IStatusRecord.Completed
             },
             {
                 id: uuidv4(),
-                todoName: 'John',
+                todoName: 'Amber',
                 finishDate: new Date(),
+                status: IStatusRecord.Incomplete
             },
             {
                 id: uuidv4(),
-                todoName: 'John',
+                todoName: 'Herry',
                 finishDate: new Date(),
+                status: IStatusRecord.Incomplete
             },
             {
                 id: uuidv4(),
-                todoName: 'John',
+                todoName: 'Curtis',
                 finishDate: new Date(),
+                status: IStatusRecord.Completed
             },
             {
                 id: uuidv4(),
-                todoName: 'John',
+                todoName: 'Hank',
                 finishDate: new Date(),
+                status: IStatusRecord.Completed
             },
         ]);
     }),
@@ -41,7 +50,6 @@ export const handlers = [
     http.post(`${TENANT_URL}/${baseAPIUrl}/create`, (req) => {
         console.log(req);
         const { request } = req;
-        // ...and respond to them using this JSON response.
         return HttpResponse.json({
             id: uuidv4(),
             ...request.body
